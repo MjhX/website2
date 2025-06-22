@@ -1,4 +1,4 @@
-import os, shutil
+import os, shutil, re
 
 def copy_contents(source, destination):
     if not os.path.exists(source):
@@ -17,11 +17,13 @@ def copy_contents(source, destination):
             raise Exception(f"What is {source_join}?")
         
 def extract_title(markdown):
-    pass
+    ret = re.search(r"\n# .*\n", "\n"+markdown+"\n") # Workaround for no good "start of file or line" options
+    if ret == None:
+        raise Exception("Header not found")
+    return ret[0].replace("# ", "", 1).strip(" \n")
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     # Read *.md from from_path
     # Read *.html from template_path
     # Use markdown_to_html_node and .to_html()
-    
