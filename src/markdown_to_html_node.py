@@ -27,8 +27,8 @@ def process_blocks(block):
 
 def make_htmlnode_quote(block):
     formatted_blocks = "\n".join(list(map(lambda b: re.sub(r"^>","",b),block.split("\n")))).split("\n\n")
-    children = list(map(process_blocks, formatted_blocks))
-    return ParentNode("blockquote", children)
+    value = "\n\n".join(list(map(lambda s: s.lstrip(" "),formatted_blocks)))
+    return LeafNode("blockquote", value)
 
 def make_htmlnode_unordered_list(block):
     split_blocks = list(map(lambda b: re.sub(r"^- ","",b),block.split("\n")))
@@ -56,17 +56,12 @@ def text_to_html_nodes(text):
     return list(map(text_node_to_html_node,text_to_textnodes(text)))
 
 def main():
-    md2 = """
->**test1**
->_test2_
+    md = """> "I am in fact a Hobbit in all but size."
 >
->test3
-
->test4
-"""
-    node2 = markdown_to_html_node(md2)
-    html2 = node2.to_html()
-    print(html2)
+> -- J.R.R. Tolkien"""
+    node = markdown_to_html_node(md)
+    html = node.to_html()
+    print(html)
 
 
 
