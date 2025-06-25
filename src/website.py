@@ -30,11 +30,23 @@ def generate_page(from_path, template_path, dest_path):
     content = markdown_to_html_node(md).to_html()
     title = extract_title(md)
     out_page = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
-    #os.makedirs(os.path.dirname(dest_path))
-    open_and_write(dest_path, out_page)
+    os.makedirs(dest_path, exist_ok = True)
+    out_html = os.path.basename(from_path).split(".")[0]+".html"
+    open_and_write(os.path.join(dest_path, out_html), out_page)
 
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, structure = ""):
-    pass
+    def recurse(partial_path):
+        joined_path_dir = os.path.join(dir_path_content, partial_path)
+        for i in os.listdir(joined_path_dir):
+            joined_i = os.path.join(joined_path_dir,i)
+            if os.path.isdir(joined_i):
+                recurse(os.path.join(partial_path,i))
+            elif os.path.isfile(joined_i):
+                if i.endswith(".md"):
+                    generate_page(joined_i, template_path, os.path.join(dest_dir_path, partial_path))
+            else:   
+                raise Exception(f"What is {joined_i}?")
+    recurse("")
 '''
     for i in os.listdir(dir_path_content):
         sj = os.path.join(structure,i)
