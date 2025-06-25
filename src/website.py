@@ -23,18 +23,19 @@ def extract_title(markdown):
         raise Exception("Header not found")
     return ret[0].replace("# ", "", 1).strip(" \n")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     md = open_and_read(from_path)
     template = open_and_read(template_path)
     content = markdown_to_html_node(md).to_html()
     title = extract_title(md)
     out_page = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+    out_page = out_page.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
     os.makedirs(dest_path, exist_ok = True)
     out_html = os.path.basename(from_path).split(".")[0]+".html"
     open_and_write(os.path.join(dest_path, out_html), out_page)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, structure = ""):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     def recurse(partial_path):
         joined_path_dir = os.path.join(dir_path_content, partial_path)
         for i in os.listdir(joined_path_dir):
@@ -43,25 +44,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, str
                 recurse(os.path.join(partial_path,i))
             elif os.path.isfile(joined_i):
                 if i.endswith(".md"):
-                    generate_page(joined_i, template_path, os.path.join(dest_dir_path, partial_path))
+                    generate_page(joined_i, template_path, os.path.join(dest_dir_path, partial_path), basepath)
             else:   
                 raise Exception(f"What is {joined_i}?")
     recurse("")
-'''
-    for i in os.listdir(dir_path_content):
-        sj = os.path.join(structure,i)
-        joined = os.path.join(dir_path_content,sj)
-        print(f"{joined}    {sj}  {i}")
-        if os.path.isdir(joined):
-            print("Directory")
-            generate_pages_recursive(joined, template_path, dest_dir_path, sj)
-        elif os.path.isfile(joined):
-            if i.endswith(".md"):
-                print("Markdown")
-                generate_page(joined, template_path, os.path.join(dest_dir_path, sj))
-        else:   
-            raise Exception(f"What is {joined}?")
-'''
 
 def open_and_read(path):
     f = open(path,'r')
