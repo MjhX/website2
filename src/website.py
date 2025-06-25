@@ -31,12 +31,33 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(md)
     out_page = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
     #os.makedirs(os.path.dirname(dest_path))
-    f = open(dest_path,'w')
-    f.write(out_page)
-    f.close()
+    open_and_write(dest_path, out_page)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, structure = ""):
+    pass
+'''
+    for i in os.listdir(dir_path_content):
+        sj = os.path.join(structure,i)
+        joined = os.path.join(dir_path_content,sj)
+        print(f"{joined}    {sj}  {i}")
+        if os.path.isdir(joined):
+            print("Directory")
+            generate_pages_recursive(joined, template_path, dest_dir_path, sj)
+        elif os.path.isfile(joined):
+            if i.endswith(".md"):
+                print("Markdown")
+                generate_page(joined, template_path, os.path.join(dest_dir_path, sj))
+        else:   
+            raise Exception(f"What is {joined}?")
+'''
 
 def open_and_read(path):
     f = open(path,'r')
     text = f.read()
     f.close()
     return text
+
+def open_and_write(path, output):
+    f = open(path,'w')
+    f.write(output)
+    f.close()
