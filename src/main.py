@@ -4,7 +4,7 @@ import sys
 
 def main():
     basepath = sys.argv[0] if len(sys.argv) > 0 else "/"
-    copy_contents("static", "public")
+    copy_contents("static", "docs")
     generate_pages_recursive("content", "template.html", "docs", basepath)
 
 if __name__ == "__main__":
